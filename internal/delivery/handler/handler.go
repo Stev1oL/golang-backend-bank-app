@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/steviol/golang-backend-bank-app/internal/domain"
@@ -37,6 +38,51 @@ func (h *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(account)
+}
+
+func (h *AccountHandler) AddBalance(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		AccountID string  `json:"account_id"`
+		Amount    float64 `json:"amount"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	if req.AccountID == "" {
+		http.Error(w, "account_id is required", http.StatusBadRequest)
+		return
+	}
+
+	if req.Amount <= 0 {
+		http.Error(w, "amount must be greater than zero", http.StatusBadRequest)
+		return
+	}
+
+	err := h.service.AddBalance(req.AccountID, req.Amount)
+	if err != nil {
+		if errors.Is(err, domain.ErrAccountNotFound) {
+			http.Error(w, "Account not found", http.StatusNotFound)
+			return
+		}
+		if errors.Is(err, domain.ErrInvalidAmount) {
+			http.Error(w, "Invalid amount", http.StatusBadRequest)
+			return
+		}
+
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Balance added successfully"})
 }
 
 func (h *AccountHandler) Transfer(w http.ResponseWriter, r *http.Request) {

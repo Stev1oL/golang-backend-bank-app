@@ -35,6 +35,7 @@ type AccountRepository interface {
 type AccountService interface {
 	CreateAccount(accountNumber string) (*Account, error)
 	GetAccount(id string) (*Account, error)
+	AddBalance(accountNumber string, balance float64) error
 	Transfer(fromAccountID, toAccountID string, amount float64) error
 	GenerateQRCode(accountID string, amount float64) (string, error)
 	ProcessQRPayment(qrCode string) error

@@ -43,6 +43,26 @@ func (s *accountService) GetAccount(id string) (*domain.Account, error) {
 	return s.repo.GetByID(id)
 }
 
+func (s *accountService) AddBalance(accountNumber string, balance float64) error {
+	if balance <= 0 {
+		return domain.ErrInvalidAmount
+	}
+
+	account, err := s.repo.GetByID(accountNumber)
+	if err != nil {
+		return err
+	}
+
+	account.Balance += balance
+	account.UpdatedAt = time.Now()
+
+	if err := s.repo.Update(account); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *accountService) Transfer(fromAccountID, toAccountID string, amount float64) error {
 	if amount <= 0 {
 		return domain.ErrInvalidAmount
