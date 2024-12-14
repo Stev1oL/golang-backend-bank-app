@@ -10,6 +10,7 @@ func SetupRoutes(accountHandler *handler.AccountHandler) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/accounts", accountHandler.CreateAccount)
+	mux.HandleFunc("/accounts/balance", accountHandler.AddBalance)
 	mux.HandleFunc("/accounts/transactions", accountHandler.GetTransactions)
 
 	mux.HandleFunc("/transfer", accountHandler.Transfer)
