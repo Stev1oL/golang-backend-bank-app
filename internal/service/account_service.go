@@ -48,7 +48,7 @@ func (s *accountService) AddBalance(accountNumber string, balance float64) error
 		return domain.ErrInvalidAmount
 	}
 
-	account, err := s.repo.GetByID(accountNumber)
+	account, err := s.repo.GetByAccountNumber(accountNumber)
 	if err != nil {
 		return err
 	}

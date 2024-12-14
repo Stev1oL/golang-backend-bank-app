@@ -47,8 +47,8 @@ func (h *AccountHandler) AddBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		AccountID string  `json:"account_id"`
-		Amount    float64 `json:"amount"`
+		AccountID string  `json:"account_number"`
+		Amount    float64 `json:"balance"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
