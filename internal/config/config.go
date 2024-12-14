@@ -1,6 +1,11 @@
 package config
 
-import "os"
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 type Config struct {
 	DatabaseURL string
@@ -8,10 +13,12 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		dbURL = "postgres://postgres:level1ngs0lo@localhost:5432/bankdb?sslmode=disable"
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: No .env file found")
 	}
+
+	dbURL := os.Getenv("DATABASE_URL")
 
 	port := os.Getenv("PORT")
 	if port == "" {
